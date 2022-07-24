@@ -20,7 +20,7 @@ var rulesetFilepath = path.join(__dirname, rulesetFilename);
 
 type Options = {
   specPath: string;
-  s: boolean;
+  save: boolean;
 };
 
 async function downloadRuleset(fileUrl: string, outputLocationPath: string): Promise<any> {
@@ -75,7 +75,7 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
     downloadSuccess = false;
   }
   
-  // Setup Spectral
+  // Setup Spectral and load ruleset
   const spectral = new Spectral();
   spectral.setRuleset(await bundleAndLoadRuleset(rulesetFilepath, { fs, fetch }));
  
@@ -85,10 +85,15 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
   
   // save the console output to a .json file in the home directory if -s argument is passed
   if (save) {
-    const resultFilename = "lint_result.json";
-    const data = JSON.stringify(result, null, 4);
-    fs.writeFileSync(path.join(homeDir, resultFilename), data);
-    console.log("Results saved to", homeDir + "/" + resultFilename);
+    try { 
+        const resultFilename = "lint_result.json";
+        const data = JSON.stringify(result, null, 4);
+        fs.writeFileSync(path.join(homeDir, resultFilename), data);
+        console.log("Results saved to", homeDir + "/" + resultFilename);
+    } catch (error) {
+        console.error("Error saving file to home directory");
+        console.error(error);
+    }
   }
 
   // If ruleset was downloaded successfully - delete it
