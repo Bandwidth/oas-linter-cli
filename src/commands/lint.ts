@@ -48,6 +48,17 @@ async function downloadRuleset(fileUrl: string, outputLocationPath: string): Pro
     });
 }
 
+function saveResult(resultFilename: string, homeDir: string, result: Object) {
+    try { 
+        const data = JSON.stringify(result, null, 4);
+        fs.writeFileSync(path.join(homeDir, resultFilename), data);
+        console.log("Results saved to", homeDir + "/" + resultFilename);
+    } catch (error) {
+        console.error("Error saving file to home directory");
+        console.error(error);
+    }
+}
+
 function deleteRemoteRuleset() {
     try {
         fs.unlinkSync(path.join(__dirname, rulesetFilename))
@@ -85,15 +96,7 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
   
   // save the console output to a .json file in the home directory if -s argument is passed
   if (save) {
-    try { 
-        const resultFilename = "lint_result.json";
-        const data = JSON.stringify(result, null, 4);
-        fs.writeFileSync(path.join(homeDir, resultFilename), data);
-        console.log("Results saved to", homeDir + "/" + resultFilename);
-    } catch (error) {
-        console.error("Error saving file to home directory");
-        console.error(error);
-    }
+    saveResult("lint_result.json", homeDir, result);
   }
 
   // If ruleset was downloaded successfully - delete it
