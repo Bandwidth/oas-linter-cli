@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npx tsc --project tsconfig.build.json && npm run copy-files",
     "copy-files": "cp -R ./src/static/ ./build/static",
-    "test": "npm run build && node ./tests/cli.test.js"
+    "test": "npm run build && jest"
   },
   "repository": {
     "type": "git",

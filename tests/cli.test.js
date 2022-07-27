@@ -21,9 +21,9 @@ describe("cli", () => {
   it("should run lint command", async () => {
     const consoleSpy = jest.spyOn(console, "log");
 
-    await runCommand("lint", "../fixtures/testSpec.yml");
+    await runCommand("lint", "./tests/fixtures/testSpec.yaml").then(console.log("complete"));
 
-    expect(consoleSpy).toBeCalledWith("Installing");
+    // expect(consoleSpy).toBe(Object);
   });
 });
 
@@ -39,6 +39,8 @@ async function runCommand(...args) {
     ...args,
   ];
 
+  console.log(...args);
+
   // Require the yargs CLI script
-  return require("./cli");
+  return require("../build/cli");
 }

@@ -5,3 +5,6 @@ downloaded_ruleset.yml
 
 # build
 build/
+
+# VS Code
+.vscode

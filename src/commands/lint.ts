@@ -9,6 +9,7 @@ const util = require("util");
 const YAML = require("yaml");
 const { fetch } = require("@stoplight/spectral-runtime");
 const { Spectral } = require("@stoplight/spectral-core");
+import { truthy } from "@stoplight/spectral-functions";
 const {
   bundleAndLoadRuleset,
 } = require("@stoplight/spectral-ruleset-bundler/with-loader");
@@ -81,28 +82,45 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
 
   // attempt to download the ruleset
   try {
-    await downloadRuleset(rulesetUrl, path.join(__dirname, rulesetFilename));
+    await downloadRuleset(rulesetUrl, rulesetFilepath);
     var downloadSuccess = true;
   } catch (error) {
     // Error downloading the remote ruleset - use the bundled local copy
     console.warn("Failed to download remote ruleset. Using Local Copy.");
     console.log("Note that lint results may vary from production ruleset.");
-    rulesetFilename = "static/.local.spectral.yaml";
+    rulesetFilename = "./static/.local.spectral.yaml";
     rulesetFilepath = path.join(__dirname, "..", rulesetFilename);
-    downloadSuccess = false;
+    console.log(rulesetFilepath);
+
+    var downloadSuccess = false;
   }
 
   // Setup Spectral and load ruleset
   const spectral = new Spectral();
+  // spectral.setRuleset({
+  //   // this will be our ruleset
+  //   rules: {
+  //     "no-empty-description": {
+  //       given: "$..description",
+  //       message: "Description must not be empty",
+  //       then: {
+  //         function: truthy,
+  //       },
+  //     },
+  //   },
+  // });
   spectral.setRuleset(
     await bundleAndLoadRuleset(rulesetFilepath, { fs, fetch })
   );
 
   // Run the linter
-  const result = await spectral.run(spec);
-  console.log(
-    util.inspect(result, { showHidden: false, depth: null, colors: true })
-  );
+  await spectral.run(spec).then(console.log)
+
+  var result: Object = {};
+  // await spectral.run(spec).then((res: any) => {
+  //   result = res;
+  //   console.log(util.inspect(result, { showHidden: false, depth: null, colors: true }));
+  // });
 
   // save the console output to a .json file in the home directory if -s argument is passed
   if (save) {
