@@ -9,7 +9,6 @@ const util = require("util");
 const YAML = require("yaml");
 const { fetch } = require("@stoplight/spectral-runtime");
 const { Spectral } = require("@stoplight/spectral-core");
-import { truthy } from "@stoplight/spectral-functions";
 const {
   bundleAndLoadRuleset,
 } = require("@stoplight/spectral-ruleset-bundler/with-loader");
