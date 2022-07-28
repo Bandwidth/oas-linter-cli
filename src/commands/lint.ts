@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 import axios from "axios";
-import chalk from 'chalk';
 import type { Arguments } from "yargs";
 
 const fs = require("fs");
 const homeDir = require("os").homedir();
 const path = require("path");
 const util = require("util");
+const chalk = require('chalk');
 const YAML = require("yaml");
 const { fetch } = require("@stoplight/spectral-runtime");
 const { Spectral } = require("@stoplight/spectral-core");
