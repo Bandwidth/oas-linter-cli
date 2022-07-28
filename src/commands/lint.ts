@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import axios from "axios";
+import chalk from 'chalk';
 import type { Arguments } from "yargs";
 
 const fs = require("fs");
@@ -60,7 +61,7 @@ function saveResult(resultFilename: string, homeDir: string, result: Object) {
     fs.writeFileSync(path.join(homeDir, resultFilename), data);
     console.log("Results saved to", homeDir + "/" + resultFilename);
   } catch (error) {
-    console.error("Error saving file to home directory");
+    console.error(chalk.red.bold("Error saving file to home directory"));
     console.error(error);
   }
 }
@@ -85,7 +86,7 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
     var downloadSuccess = true;
   } catch (error) {
     // Error downloading the remote ruleset - use the bundled local copy
-    console.warn("Failed to download remote ruleset. Using Local Copy.");
+    console.warn(chalk.yellow.bold("Failed to download remote ruleset. Using Local Copy."));
     console.log("Note that lint results may vary from production ruleset.");
     rulesetFilename = "./static/.local.spectral.yaml";
     rulesetFilepath = path.join(__dirname, "..", rulesetFilename);
