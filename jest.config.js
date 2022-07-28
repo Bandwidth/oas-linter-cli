@@ -2,14 +2,8 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   moduleNameMapper: {
-    "build/commands/.remote.spectral.yaml": [
-      "<rootDir>/$1"
-    ],
-    "build/static/.local.spectral.yaml": [
-        "<rootDir>/$1"
-    ],
-    "tests/fixtures/testSpec.yaml": [
-        "<rootDir>/$1",
-      ]
+    "^commands/(.*)$": "<rootDir>/build/commands/$1",
+    "^static/(.*)$": "<rootDir>/build/static/$1",
+    "^tests/fixtures/(.*)$": "<rootDir>/tests/fixtures/$1"
   }
 };

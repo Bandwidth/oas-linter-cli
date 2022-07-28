@@ -97,30 +97,16 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
 
   // Setup Spectral and load ruleset
   const spectral = new Spectral();
-  // spectral.setRuleset({
-  //   // this will be our ruleset
-  //   rules: {
-  //     "no-empty-description": {
-  //       given: "$..description",
-  //       message: "Description must not be empty",
-  //       then: {
-  //         function: truthy,
-  //       },
-  //     },
-  //   },
-  // });
   spectral.setRuleset(
     await bundleAndLoadRuleset(rulesetFilepath, { fs, fetch })
   );
 
   // Run the linter
-  await spectral.run(spec).then(console.log)
-
   var result: Object = {};
-  // await spectral.run(spec).then((res: any) => {
-  //   result = res;
-  //   console.log(util.inspect(result, { showHidden: false, depth: null, colors: true }));
-  // });
+  await spectral.run(spec).then((res: any) => {
+    result = res;
+    console.log(util.inspect(result, { showHidden: false, depth: null, colors: true }));
+  });
 
   // save the console output to a .json file in the home directory if -s argument is passed
   if (save) {
