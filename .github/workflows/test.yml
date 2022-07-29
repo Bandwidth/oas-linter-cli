@@ -17,8 +17,7 @@ jobs:
       with:
         node-version: 16
 
-    - name: Install npm Package
-      run: npm install
-
-    - name: Test npm Package
-      run: npm run test --if-present
+    - name: Test
+      run: |
+        npm install
+        npm run test
