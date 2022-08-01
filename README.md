@@ -9,6 +9,7 @@ This is a CLI tool that enables users to run an OAS (Open API Spec) file through
 npm login --registry https://npm.pkg.github.com    # Requires a github token with Bandwidth SSO access
 npm config set @Bandwidth:registry https://npm.pkg.github.com
 
+# note the uppercase `B` 
 npm install -g @Bandwidth/oas-linter-cli
 ```
 
@@ -19,4 +20,11 @@ bw-oas-lint -h    # Help
 bw-oas-lint lint ../path/to/my/spec.yml    # must be in Yaml format
 
 # add -s flag to save the terminal output to a .json file in your home directory
+```
+
+## Uninstall 
+
+```sh
+# note the lowercase `b`
+npm uninstall -g @bandwidth/oas-linter-cli
 ```
