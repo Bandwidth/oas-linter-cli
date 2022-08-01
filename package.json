@@ -1,5 +1,5 @@
 {
-  "name": "@bandwidth/bw-oas-lint",
+  "name": "@bandwidth/oas-linter-cli",
   "version": "1.0.0",
   "description": "Bandwidth CLI Linter for OAS Files",
   "main": "./build/cli.js",
@@ -21,6 +21,9 @@
     "url": "https://github.com/Bandwidth/oas-linter-cli/issues"
   },
   "homepage": "https://github.com/Bandwidth/oas-linter-cli#readme",
+  "publishConfig": {
+    "registry":"https://npm.pkg.github.com"
+  },
   "devDependencies": {
     "@types/jest": "^28.1.6",
     "@types/node": "^18.0.6",
