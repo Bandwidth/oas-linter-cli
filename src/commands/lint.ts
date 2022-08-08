@@ -81,9 +81,9 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
   const spec = YAML.parse(specFile);
 
   // attempt to download the ruleset
+  let downloadSuccess = true;
   try {
     await downloadRuleset(rulesetUrl, rulesetFilepath);
-    var downloadSuccess = true;
   } catch (error) {
     // Error downloading the remote ruleset - use the bundled local copy
     console.warn(chalk.yellow.bold("Failed to download remote ruleset. Using Local Copy."));
@@ -91,8 +91,7 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
     rulesetFilename = "./static/.local.spectral.yaml";
     rulesetFilepath = path.join(__dirname, "..", rulesetFilename);
     console.log(rulesetFilepath);
-
-    var downloadSuccess = false;
+    downloadSuccess = false;
   }
 
   // Setup Spectral and load ruleset
