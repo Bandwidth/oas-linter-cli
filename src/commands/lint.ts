@@ -79,6 +79,7 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
   const { specPath, save } = argv;
   const specFile = fs.readFileSync(specPath, "utf8");
   const spec = YAML.parse(specFile);
+  var specName = path.basename(specPath,path.extname(specPath));
 
   // attempt to download the ruleset
   let downloadSuccess = true;
@@ -101,15 +102,16 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
   );
 
   // Run the linter
-  var result: Object = {};
+  var result: Array<Object> = [];
   await spectral.run(spec).then((res: any) => {
     result = res;
     console.log(util.inspect(result, { showHidden: false, depth: null, colors: true }));
+    // console.log(JSON.stringify(result, null, 2));
   });
 
   // save the console output to a .json file in the home directory if -s argument is passed
   if (save) {
-    saveResult("lint_result.json", homeDir, result);
+    saveResult(specName + "_lint_result.json", homeDir, JSON.stringify(result, null, 4));
   }
 
   // If ruleset was downloaded successfully - delete it

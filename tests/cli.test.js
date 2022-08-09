@@ -27,7 +27,14 @@ describe("cli", () => {
     process.argv = originalArgv;
   });
 
-  it("should run lint command", async () => {
-    expect(typeof testLint("./tests/fixtures/testSpec.yaml")).toBe("string");
+  it("should run lint command using a valid spec", async () => {
+    expect(true).toBe(true)
+  });
+
+  it("should run lint command using a spec with errors", async () => {
+    result = testLint("./tests/fixtures/testSpec.yaml");
+    expect(typeof(result)).toBe("string");
+
+    jsonResult = JSON.parse(result);
   });
 });
