@@ -6,7 +6,7 @@ const { execSync } = require("child_process");
  * @param {...string} args
  */
 const testLint = (args) => {
-  return execSync(`node build/cli.js lint ${args}`).toString();
+  return execSync(`node build/cli.js lint ${args} -t`).toString();
 };
 
 describe("cli", () => {
@@ -32,9 +32,18 @@ describe("cli", () => {
   });
 
   it("should run lint command using a spec with errors", async () => {
-    result = testLint("./tests/fixtures/testSpec.yaml");
-    expect(typeof(result)).toBe("string");
-
-    jsonResult = JSON.parse(result);
+    result = JSON.parse(testLint("./tests/fixtures/testSpec.yaml"));
+    testObj = result[1];
+    expect(typeof testObj.code).toBe("string");
+    expect(typeof testObj.message).toBe("string");
+    expect(typeof testObj.path).toBe("object");
+    expect(typeof testObj.severity).toBe("number");
+    expect(typeof testObj.range).toBe("object");
+    expect(typeof testObj.range.start).toBe("object");
+    expect(typeof testObj.range.start.line).toBe("number");
+    expect(typeof testObj.range.start.character).toBe("number");
+    expect(typeof testObj.range.end).toBe("object");
+    expect(typeof testObj.range.end.line).toBe("number");
+    expect(typeof testObj.range.end.character).toBe("number");
   });
 });

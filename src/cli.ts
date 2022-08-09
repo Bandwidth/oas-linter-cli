@@ -7,5 +7,6 @@ yargs(hideBin(process.argv))
   .alias({ h: 'help' })
   .alias({ v: 'version' })
   .alias({ s: 'save' })
+  .alias({ t: 'test'})
   .strict()
   .argv;
