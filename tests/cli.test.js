@@ -6,7 +6,7 @@ const { execSync } = require("child_process");
  * @param {...string} args
  */
 const testLint = (args) => {
-  return execSync(`node build/cli.js lint ${args} -t`).toString();
+  return execSync(`node build/cli.js lint ${args} -j`).toString();
 };
 
 describe("cli", () => {

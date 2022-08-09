@@ -76,7 +76,7 @@ function deleteRemoteRuleset() {
 
 export const handler = async (argv: Arguments<Options>): Promise<void> => {
   // Open the provided API Spec
-  const { specPath, save, test } = argv;
+  const { specPath, save, json } = argv;
   const specFile = fs.readFileSync(specPath, "utf8");
   const spec = YAML.parse(specFile);
   var specName = path.basename(specPath,path.extname(specPath));
@@ -104,8 +104,8 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
   // Run the linter
   var result: Array<Object> = [];
   await spectral.run(spec).then((result: Array<Object>) => {
-    if (test) {
-      // Print result in JSON format so that it can be parsed by the test
+    if (json) {
+      // Print result in JSON format so that it can be parsed programmatically
       console.log(JSON.stringify(result, null, 2));
     } else {
       console.log(util.inspect(result, { showHidden: false, depth: null, colors: true }));
