@@ -1,0 +1,10 @@
+# pkg files
+node_modules
+ruleset.yml
+downloaded_ruleset.yml
+
+# build
+build/
+
+# VS Code
+.vscode

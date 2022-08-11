@@ -1,0 +1,183 @@
+extends: spectral:oas
+rules:
+  openApiFields:
+    description: There should be components, security, and a tags object.
+    message: "The spec is missing the '{{property}}' object."
+    given: "$"
+    severity: error
+    then:
+      - field: "security"
+        function: truthy
+      - field: "tags"
+        function: truthy
+      - field: "components"
+        function: truthy  
+  infoFieldsRequired:
+    description: The Info object must include a title and version.
+    message: "The Info object is missing the '{{property}}' property."
+    given: "$.info"
+    severity: error
+    then:
+      - field: "title"
+        function: truthy
+      - field: "version"
+        function: truthy 
+  validSemanticVersion:
+    description: Verifies that the version is a valid semantic version in the format x.x.x
+    message: The spec should follow semantic versioning. '{{value}}' is not a valid version.
+    severity: error
+    given: "$.info.version"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^([0-9]+.[0-9]+.[0-9]+)$"
+  pathsSummary:
+    description: There needs to be a summary field for every method.
+    message: "There needs to be a summary property for every method."
+    given: "$.paths.*.[get, post, put, patch, delete]"
+    resolved: false
+    severity: error
+    then:
+      - field: "summary"
+        function: truthy
+  componentsFieldsRequired:
+    description: All of the following components sections must exist - Schemas, Responses, and SecuritySchema.
+    message: "Components is missing the '{{property}}' section."
+    given: "$.components"
+    severity: error
+    then:
+      - field: "schemas"
+        function: truthy
+      - field: "responses"
+        function: truthy 
+      - field: "securitySchemes"
+        function: truthy   
+  componentsParametersExists:
+    description: There should be a parameters sections within components.
+    message: "Components is missing the '{{property}}' section."
+    given: "$.components"
+    severity: warn
+    then:
+      - field: "parameters"
+        function: truthy
+  componentsRequestBodiesExists:
+    description: There should be a requestBodies section within components.
+    message: "Components is missing the '{{property}}' section"
+    given: "$.components"
+    severity: warn
+    then:
+      - field: "requestBodies"
+        function: truthy                                  
+  camelCaseOperationId:
+    description: All operationIds should be written in camelCase.
+    message: "'{{value}}' needs to be written in camelCase."
+    type: style
+    given: "$.paths.*.*.operationId"
+    severity: error
+    then:
+      function: casing
+      functionOptions:
+        type: camel
+  camelCaseParameterName:
+    description: All parameter names should be written in camelCase.
+    message: "'{{value}}' needs to be written in camelCase."
+    type: style
+    given: "$.components.parameters.*.name"  
+    severity: warn
+    then:
+      function: casing
+      functionOptions:
+        type: camel 
+  macroCaseEnum:
+    description: Enums should be in MACRO case.
+    message: "Enum value '{{value}}' should be written in MACRO case"
+    type: style
+    given: "$.components.*.*.enum.[*]"
+    severity: warn
+    then:
+      function: casing
+      functionOptions:
+        type: macro
+  badRequestError:
+    description: "Responses should define a HTTP 400 Bad Request error"
+    message: "Responses should define a 400 Bad Request Error."
+    given: "$.paths.[*][*].responses"
+    severity: warn
+    then: 
+      field: "400"
+      function: truthy
+  unauthorizedError:
+    description: "Resources must declare a response for a HTTP 401 Unauthorized error"
+    message: "Responses should define a 401 Unauthorized Error."
+    given: "$.paths.[*][*].responses"
+    severity: warn
+    then: 
+      field: "401"
+      function: truthy
+  forbiddenError:
+    description: "Resources must declare a response for a HTTP 403 Forbidden error"
+    message: "Responses should define a 403 Forbidden Error."
+    given: "$.paths.[*][*].responses"
+    severity: warn
+    then: 
+      field: "403"
+      function: truthy
+  notFoundError:
+    description: "Resources must declare a response for a HTTP 404 Not Found error"
+    message: "Responses should define a 404 Not Found Error."
+    given: "$.paths.[*][get, put, patch, delete].responses"
+    severity: warn
+    then: 
+      field: "404"
+      function: truthy
+  methodNotAllowedError:
+    description: "Resources must declare a response for a HTTP 405 Method Not Allowed error"
+    message: "Responses should define a 405 Method Not Allowed Error."
+    given: "$.paths.[*][*].responses"
+    severity: warn
+    then: 
+      field: "405"
+      function: truthy
+  tooManyRequestsError:
+    description: "Resources must declare a response for a HTTP 429 Too Many Requests error"
+    message: "Responses should define a 429 Too Many Requests Error."
+    given: "$.paths.[*][*].responses"
+    severity: warn
+    then: 
+      field: "429"
+      function: truthy
+  internalServerError:
+    description: "Resources must declare a response for a HTTP 500 Internal Server error"
+    message: "Responses should define a 500 Internal Server Error."
+    given: "$.paths.[*][*].responses"
+    severity: warn
+    then: 
+      field: "500"
+      function: truthy
+  globallyDefinedResponses:
+    description: "Responses should be defined globally and referenced elsewhere."
+    message: "All responses should be defined globally and only referenced everywhere else."
+    given: "$.paths.[*][*].responses.*[*]"
+    resolved: false
+    severity: error
+    then: 
+      field: "$ref"
+      function: truthy
+  globallyDefinedRequestBodies:
+    description: "RequestBodies should be defined globally and referenced elsewhere."
+    message: "Every requestBody should be defined globally and only referenced everywhere else."
+    given: "$.paths.[*][*].requestBody[*]"
+    resolved: false
+    severity: error
+    then: 
+      field: "$ref"
+      function: truthy      
+  globallyDefinedParameters:
+    description: "Parameters should be defined globally and referenced elsewhere."
+    message: "All parameters should be defined globally and only referenced everywhere else."
+    given: "$.paths.[*][*].parameters[*]"
+    resolved: false
+    severity: error
+    then:
+      field: "$ref"
+      function: truthy
