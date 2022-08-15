@@ -1,6 +1,6 @@
 {
   "name": "@Bandwidth/oas-linter-cli",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Bandwidth CLI Linter for OAS Files",
   "main": "./build/cli.js",
   "scripts": {
