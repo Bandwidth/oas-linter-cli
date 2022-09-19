@@ -8,5 +8,6 @@ yargs(hideBin(process.argv))
   .alias({ v: 'version' })
   .alias({ s: 'save' })
   .alias({ j: 'json'})
+  .alias({ r: 'ruleset'})
   .strict()
   .argv;
