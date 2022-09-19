@@ -76,23 +76,28 @@ function deleteRemoteRuleset() {
 
 export const handler = async (argv: Arguments<Options>): Promise<void> => {
   // Open the provided API Spec
-  const { specPath, save, json } = argv;
+  const { specPath, save, json, ruleset } = argv;
   const specFile = fs.readFileSync(specPath, "utf8");
   const spec = YAML.parse(specFile);
   var specName = path.basename(specPath,path.extname(specPath));
 
-  // attempt to download the ruleset
-  let downloadSuccess = true;
-  try {
-    await downloadRuleset(rulesetUrl, rulesetFilepath);
-  } catch (error) {
-    // Error downloading the remote ruleset - use the bundled local copy
-    console.warn(chalk.yellow.bold("Failed to download remote ruleset. Using Local Copy."));
-    console.log("Note that lint results may vary from production ruleset.");
-    rulesetFilename = "./static/.local.spectral.yaml";
-    rulesetFilepath = path.join(__dirname, "..", rulesetFilename);
-    console.log(rulesetFilepath);
-    downloadSuccess = false;
+  // attempt to download the ruleset if no local file was provided
+  var downloadSuccess; 
+  if(!ruleset){
+    downloadSuccess = true;
+    try {
+      await downloadRuleset(rulesetUrl, rulesetFilepath);
+    } catch (error) {
+      // Error downloading the remote ruleset - use the bundled local copy
+      console.warn(chalk.yellow.bold("Failed to download remote ruleset. Using Local Copy."));
+      console.log("Note that lint results may vary from production ruleset.");
+      rulesetFilename = "./static/.local.spectral.yaml";
+      rulesetFilepath = path.join(__dirname, "..", rulesetFilename);
+      console.log(rulesetFilepath);
+      downloadSuccess = false;
+    }
+  } else {
+    rulesetFilepath = path.join(__dirname, "..", ruleset);
   }
 
   // Setup Spectral and load ruleset
