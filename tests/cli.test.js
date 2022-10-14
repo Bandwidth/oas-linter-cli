@@ -10,7 +10,7 @@ const testLint = (args) => {
 };
 
 const testLintWithLocalRuleset = (args) => {
-  return execSync(`node build/cli.js lint ${args} -j -r ../src/static/.local.spectral.yaml`).toString();
+  return execSync(`node build/cli.js lint ${args} -j -r ${__dirname + "/../src/static/.local.spectral.yaml"}`).toString();
 };
 
 describe("cli", () => {

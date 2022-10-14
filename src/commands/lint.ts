@@ -79,11 +79,11 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
   const { specPath, save, json, ruleset } = argv;
   const specFile = fs.readFileSync(specPath, "utf8");
   const spec = YAML.parse(specFile);
-  var specName = path.basename(specPath,path.extname(specPath));
+  var specName = path.basename(specPath, path.extname(specPath));
 
   // attempt to download the ruleset if no local file was provided
-  var downloadSuccess; 
-  if(!ruleset){
+  var downloadSuccess;
+  if (!ruleset) {
     downloadSuccess = true;
     try {
       await downloadRuleset(rulesetUrl, rulesetFilepath);
@@ -97,7 +97,7 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
       downloadSuccess = false;
     }
   } else {
-    rulesetFilepath = path.join(__dirname, "..", ruleset);
+    rulesetFilepath = ruleset;
   }
 
   // Setup Spectral and load ruleset
