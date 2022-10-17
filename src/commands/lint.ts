@@ -107,7 +107,6 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
   );
 
   // Run the linter
-  var result: Array<Object> = [];
   await spectral.run(spec).then((result: Array<Object>) => {
     if (json) {
       // Print result in JSON format so that it can be parsed programmatically
@@ -115,12 +114,11 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
     } else {
       console.log(util.inspect(result, { showHidden: false, depth: null, colors: true }));
     }
+    // save the console output to a .json file in the home directory if -s argument is passed
+    if (save) {
+      saveResult(specName + "_lint_result.json", homeDir, result);
+    }
   });
-
-  // save the console output to a .json file in the home directory if -s argument is passed
-  if (save) {
-    saveResult(specName + "_lint_result.json", homeDir, JSON.stringify(result, null, 4));
-  }
 
   // If ruleset was downloaded successfully - delete it
   if (downloadSuccess) {
