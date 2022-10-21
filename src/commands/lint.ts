@@ -8,8 +8,9 @@ const path = require("path");
 const util = require("util");
 const chalk = require('chalk');
 const YAML = require("yaml");
+const Parsers = require('@stoplight/spectral-parsers');
 const { fetch } = require("@stoplight/spectral-runtime");
-const { Spectral } = require("@stoplight/spectral-core");
+const { Spectral, Document } = require("@stoplight/spectral-core");
 const {
   bundleAndLoadRuleset,
 } = require("@stoplight/spectral-ruleset-bundler/with-loader");
@@ -26,6 +27,18 @@ type Options = {
   specPath: string;
   save: boolean;
 };
+
+interface Result {
+  code: string,
+  message: string,
+  path: Array<string>,
+  severity: number,
+  source: string,
+  range: {
+    start: { line: number, character: number },
+    end: { line: number, character: number }
+  }
+}
 
 async function downloadRuleset(
   fileUrl: string,
@@ -107,7 +120,11 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
   );
 
   // Run the linter
-  await spectral.run(spec).then((result: Array<Object>) => {
+  await spectral.run(new Document(specFile, Parsers.Yaml, specPath)).then((result: Array<Result>) => {
+    result.forEach(res => {
+      res.range.start.line += 1;
+      res.range.end.line += 1;
+    });
     if (json) {
       // Print result in JSON format so that it can be parsed programmatically
       console.log(JSON.stringify(result, null, 2));
