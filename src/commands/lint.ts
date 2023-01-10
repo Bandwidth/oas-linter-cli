@@ -6,39 +6,37 @@ const fs = require("fs");
 const homeDir = require("os").homedir();
 const path = require("path");
 const util = require("util");
-const chalk = require('chalk');
+const chalk = require("chalk");
 const YAML = require("yaml");
-const Parsers = require('@stoplight/spectral-parsers');
+const Parsers = require("@stoplight/spectral-parsers");
 const { fetch } = require("@stoplight/spectral-runtime");
 const { Spectral, Document } = require("@stoplight/spectral-core");
 const {
   bundleAndLoadRuleset,
 } = require("@stoplight/spectral-ruleset-bundler/with-loader");
 
-export const command: string = "lint <specPath>";
-export const aliases: string[] = ["l"];
-export const desc: string = "Lint an OpenAPI Specification";
+type Options = {
+  specPath: string;
+  save: boolean;
+  json: boolean;
+  ruleset: string;
+};
+
+interface Result {
+  code: string;
+  message: string;
+  path: Array<string>;
+  severity: number;
+  source: string;
+  range: {
+    start: { line: number; character: number };
+    end: { line: number; character: number };
+  };
+}
 
 const rulesetUrl = "https://bw-linter-ruleset.s3.amazonaws.com/ruleset.yml";
 var rulesetFilename = ".remote.spectral.yaml";
 var rulesetFilepath = path.join(__dirname, rulesetFilename);
-
-type Options = {
-  specPath: string;
-  save: boolean;
-};
-
-interface Result {
-  code: string,
-  message: string,
-  path: Array<string>,
-  severity: number,
-  source: string,
-  range: {
-    start: { line: number, character: number },
-    end: { line: number, character: number }
-  }
-}
 
 async function downloadRuleset(
   fileUrl: string,
@@ -87,7 +85,28 @@ function deleteRemoteRuleset() {
   }
 }
 
-export const handler = async (argv: Arguments<Options>): Promise<void> => {
+exports.command = "lint <specPath>";
+exports.aliases = ["l"];
+exports.describe = "Lint an OpenAPI Specification";
+exports.builder = {
+  save: {
+    type: "boolean",
+    describe: "Save result to users home directory",
+    alias: "s",
+  },
+  json: {
+    type: "boolean",
+    describe: "Output result as json",
+    alias: "j",
+  },
+  ruleset: {
+    type: "string",
+    describe: "Path to alternative ruleset",
+    alias: "r",
+  },
+};
+
+exports.handler = async (argv: Arguments<Options>): Promise<void> => {
   // Open the provided API Spec
   const { specPath, save, json, ruleset } = argv;
   const specFile = fs.readFileSync(specPath, "utf8");
@@ -102,7 +121,11 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
       await downloadRuleset(rulesetUrl, rulesetFilepath);
     } catch (error) {
       // Error downloading the remote ruleset - use the bundled local copy
-      console.warn(chalk.yellow.bold("Failed to download remote ruleset. Using Local Copy."));
+      console.warn(
+        chalk.yellow.bold(
+          "Failed to download remote ruleset. Using Local Copy."
+        )
+      );
       console.log("Note that lint results may vary from production ruleset.");
       rulesetFilename = "./static/.local.spectral.yaml";
       rulesetFilepath = path.join(__dirname, "..", rulesetFilename);
@@ -120,22 +143,26 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
   );
 
   // Run the linter
-  await spectral.run(new Document(specFile, Parsers.Yaml, specPath)).then((result: Array<Result>) => {
-    result.forEach(res => {
-      res.range.start.line += 1;
-      res.range.end.line += 1;
+  await spectral
+    .run(new Document(specFile, Parsers.Yaml, specPath))
+    .then((result: Array<Result>) => {
+      result.forEach((res) => {
+        res.range.start.line += 1;
+        res.range.end.line += 1;
+      });
+      if (json) {
+        // Print result in JSON format so that it can be parsed programmatically
+        console.log(JSON.stringify(result, null, 2));
+      } else {
+        console.log(
+          util.inspect(result, { showHidden: false, depth: null, colors: true })
+        );
+      }
+      // save the console output to a .json file in the home directory if -s argument is passed
+      if (save) {
+        saveResult(specName + "_lint_result.json", homeDir, result);
+      }
     });
-    if (json) {
-      // Print result in JSON format so that it can be parsed programmatically
-      console.log(JSON.stringify(result, null, 2));
-    } else {
-      console.log(util.inspect(result, { showHidden: false, depth: null, colors: true }));
-    }
-    // save the console output to a .json file in the home directory if -s argument is passed
-    if (save) {
-      saveResult(specName + "_lint_result.json", homeDir, result);
-    }
-  });
 
   // If ruleset was downloaded successfully - delete it
   if (downloadSuccess) {
