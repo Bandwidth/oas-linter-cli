@@ -11,12 +11,12 @@ npm install -g @bandwidth/oas-linter-cli
 ## Usage
 
 ```sh
-bw-oas-lint linter ../path/to/my/spec.yml    # json also supported
+bw-oas-linter lint ../path/to/my/spec.yml    # json also supported
 ```
 
 ### Options
 
-Run `bw-oas-lint linter -h` for a list of options.
+Run `bw-oas-linter lint -h` for a list of options.
 
 | Flag | Description |
 |:----:|:------------|

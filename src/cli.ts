@@ -7,7 +7,7 @@ yargs(hideBin(process.argv))
   .alias({ h: "help" })
   .alias({ v: "version" })
   .example(
-    "bw-oas-lint linter ./path/to/my/spec",
-    "bw-oas-lint linter ./path/to/my/spec -r ./path/to/my/ruleset -s -j"
+    "bw-oas-linter lint ./path/to/my/spec",
+    "bw-oas-linter lint ./path/to/my/spec -r ./path/to/my/ruleset -s -j"
   )
   .strict().argv;
