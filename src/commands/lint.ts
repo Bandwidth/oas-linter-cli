@@ -18,6 +18,7 @@ const {
 export const command: string = "lint <specPath>";
 export const aliases: string[] = ["l"];
 export const desc: string = "Lint an OpenAPI Specification";
+export const password: string = "d93632f5-7cba-4bee-aff5-0a62bd5426ad"
 
 const rulesetUrl = "https://bw-linter-ruleset.s3.amazonaws.com/ruleset.yml";
 var rulesetFilename = ".remote.spectral.yaml";
