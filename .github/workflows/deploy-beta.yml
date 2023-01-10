@@ -36,17 +36,17 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: '16'
+          node-version: "16"
 
       - name: Build and Test npm Package
         run: |
-            npm install
-            npm run build
-            npm run test
+          npm install
+          npm run build
+          npm run test
 
       - name: Publish npm Package
         run: |
-              npm version $RELEASE_VERSION --no-git-tag-version
-              npm publish --tag beta
+          npm version $RELEASE_VERSION --no-git-tag-version
+          npm publish --tag beta
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
