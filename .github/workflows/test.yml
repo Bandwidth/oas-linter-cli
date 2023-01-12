@@ -6,18 +6,21 @@ on:
 
 jobs:
   test:
-    name: Test 
+    name: Test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14, 16, 18, 'latest']
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Setup Node
-      uses: actions/setup-node@v2
-      with:
-        node-version: 16
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    - name: Test
-      run: |
-        npm install
-        npm run test
+      - name: Test
+        run: |
+          npm install
+          npm run test
