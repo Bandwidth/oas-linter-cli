@@ -37,30 +37,27 @@ interface Result {
 const tmpRulesetFile = tmp.fileSync({ postfix: ".js" });
 const RULESET_URL = "https://bw-linter-ruleset.s3.amazonaws.com/ruleset.js";
 
-async function downloadRemoteRuleset(): Promise<any> {
-  return axios({
+const downloadRemoteRuleset = async () => {
+  const response = await axios({
     method: "get",
     url: RULESET_URL,
-  })
-    .then((response) => {
-      return new Promise((resolve) => {
-        try {
-          fs.writeFileSync(tmpRulesetFile.name, response.data);
-        } catch (err) {
-          // If there is an issue writing, default to local
-          console.error(`Failed to write ruleset to file, error: ${err}`);
-          resolve(false);
-        }
-        // We have the remote ruleset
-        resolve(true);
-      });
-    })
-    .catch((err) => {
-      // We had an error grabbing remote ruleset, default to local
-      console.error(`Failed to retrieve ruleset from AWS, error: ${err}`);
-      return new Promise((resolve) => resolve(false));
-    });
-}
+  });
+
+  // Check for failure response
+  if (response.status != 200) {
+    console.error(`Failed to retrieve ruleset from AWS.`);
+    return false;
+  }
+
+  try {
+    fs.writeFileSync(tmpRulesetFile.name, response.data);
+    return true;
+  } catch (err) {
+    // If there is an issue writing, default to local
+    console.error(`Failed to write ruleset to file, error: ${err}`);
+    return false;
+  }
+};
 
 function saveResult(resultFilename: string, homeDir: string, result: Object) {
   try {
