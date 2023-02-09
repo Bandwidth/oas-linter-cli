@@ -8,7 +8,6 @@ const homeDir = require("os").homedir();
 const path = require("path");
 const util = require("util");
 const chalk = require("chalk");
-const YAML = require("yaml");
 const Parsers = require("@stoplight/spectral-parsers");
 const { fetch } = require("@stoplight/spectral-runtime");
 const { Spectral, Document } = require("@stoplight/spectral-core");
@@ -99,7 +98,6 @@ exports.handler = async (argv: Arguments<Options>): Promise<void> => {
   // Open the provided API Spec
   const { specPath, save, json, ruleset } = argv;
   const specFile = fs.readFileSync(specPath, "utf8");
-  // const spec = YAML.parse(specFile);
   let specName = path.basename(specPath, path.extname(specPath));
   let rulesetFilepath;
 
