@@ -3,6 +3,7 @@ import axios from "axios";
 import type { Arguments } from "yargs";
 
 const fs = require("fs");
+const tmp = require("tmp");
 const homeDir = require("os").homedir();
 const path = require("path");
 const util = require("util");
@@ -34,36 +35,32 @@ interface Result {
   };
 }
 
-const rulesetUrl = "https://bw-linter-ruleset.s3.amazonaws.com/ruleset.yml";
-var rulesetFilename = ".remote.spectral.yaml";
-var rulesetFilepath = path.join(__dirname, rulesetFilename);
+const tmpRulesetFile = tmp.fileSync({ postfix: ".js" });
+const RULESET_URL = "https://bw-linter-ruleset.s3.amazonaws.com/ruleset.js";
 
-async function downloadRuleset(
-  fileUrl: string,
-  outputLocationPath: string
-): Promise<any> {
-  const writer = fs.createWriteStream(outputLocationPath);
-
+async function downloadRemoteRuleset(): Promise<any> {
   return axios({
     method: "get",
-    url: fileUrl,
-    responseType: "stream",
-  }).then((response) => {
-    return new Promise((resolve, reject) => {
-      response.data.pipe(writer);
-      let error: any = null;
-      writer.on("error", (err: any) => {
-        error = err;
-        writer.close();
-        reject(err);
-      });
-      writer.on("close", () => {
-        if (!error) {
-          resolve(true);
+    url: RULESET_URL,
+  })
+    .then((response) => {
+      return new Promise((resolve) => {
+        try {
+          fs.writeFileSync(tmpRulesetFile.name, response.data);
+        } catch (err) {
+          // If there is an issue writing, default to local
+          console.error(`Failed to write ruleset to file, error: ${err}`);
+          resolve(false);
         }
+        // We have the remote ruleset
+        resolve(true);
       });
+    })
+    .catch((err) => {
+      // We had an error grabbing remote ruleset, default to local
+      console.error(`Failed to retrieve ruleset from AWS, error: ${err}`);
+      return new Promise((resolve) => resolve(false));
     });
-  });
 }
 
 function saveResult(resultFilename: string, homeDir: string, result: Object) {
@@ -74,14 +71,6 @@ function saveResult(resultFilename: string, homeDir: string, result: Object) {
   } catch (error) {
     console.error(chalk.red.bold("Error saving file to home directory"));
     console.error(error);
-  }
-}
-
-function deleteRemoteRuleset() {
-  try {
-    fs.unlinkSync(path.join(__dirname, rulesetFilename));
-  } catch (err) {
-    console.error(err);
   }
 }
 
@@ -110,16 +99,17 @@ exports.handler = async (argv: Arguments<Options>): Promise<void> => {
   // Open the provided API Spec
   const { specPath, save, json, ruleset } = argv;
   const specFile = fs.readFileSync(specPath, "utf8");
-  const spec = YAML.parse(specFile);
-  var specName = path.basename(specPath, path.extname(specPath));
+  // const spec = YAML.parse(specFile);
+  let specName = path.basename(specPath, path.extname(specPath));
+  let rulesetFilepath;
 
-  // attempt to download the ruleset if no local file was provided
-  var downloadSuccess;
+  // Attempt to download the ruleset if no local file was provided
   if (!ruleset) {
-    downloadSuccess = true;
-    try {
-      await downloadRuleset(rulesetUrl, rulesetFilepath);
-    } catch (error) {
+    const downloadSuccess = await downloadRemoteRuleset();
+    if (downloadSuccess) {
+      // Use the downloaded ruleset
+      rulesetFilepath = tmpRulesetFile.name;
+    } else {
       // Error downloading the remote ruleset - use the bundled local copy
       console.warn(
         chalk.yellow.bold(
@@ -127,12 +117,12 @@ exports.handler = async (argv: Arguments<Options>): Promise<void> => {
         )
       );
       console.log("Note that lint results may vary from production ruleset.");
-      rulesetFilename = "./static/.local.spectral.yaml";
+      const rulesetFilename = "./static/.local.ruleset.js";
       rulesetFilepath = path.join(__dirname, "..", rulesetFilename);
       console.log(rulesetFilepath);
-      downloadSuccess = false;
     }
   } else {
+    // Use the provided ruleset
     rulesetFilepath = ruleset;
   }
 
@@ -141,6 +131,7 @@ exports.handler = async (argv: Arguments<Options>): Promise<void> => {
   spectral.setRuleset(
     await bundleAndLoadRuleset(rulesetFilepath, { fs, fetch })
   );
+  spectral.set;
 
   // Run the linter
   await spectral
@@ -163,9 +154,4 @@ exports.handler = async (argv: Arguments<Options>): Promise<void> => {
         saveResult(specName + "_lint_result.json", homeDir, result);
       }
     });
-
-  // If ruleset was downloaded successfully - delete it
-  if (downloadSuccess) {
-    deleteRemoteRuleset();
-  }
 };
