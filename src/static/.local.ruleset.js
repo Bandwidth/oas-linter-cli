@@ -216,21 +216,6 @@ export default {
         },
       ],
     },
-    sentenceCaseDescriptions: {
-      description: "Descriptions should be written in a normal sentence case.",
-      message: "'{{value}}' needs to be written in sentence case.",
-      type: "style",
-      given: "$..description",
-      severity: "warn",
-      then: [
-        {
-          function: pattern,
-          functionOptions: {
-            match: "(^[A-Z]|(?<=[.?!]))*[A-Z][-_`)(A-Za-z0-9,;'\"\\s]*[.?!]",
-          },
-        },
-      ],
-    },
     macroCaseEnum: {
       description: "Enums should be in MACRO_CASE.",
       message: "Enum value '{{value}}' should be written in MACRO_CASE",
