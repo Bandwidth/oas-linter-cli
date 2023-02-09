@@ -1,5 +1,4 @@
 import { truthy, falsy, casing, pattern } from "@stoplight/spectral-functions";
-// import { oas3 } from "@stoplight/spectral-formats";
 import { oas } from "@stoplight/spectral-rulesets";
 
 // Custom Ruleset Functions
