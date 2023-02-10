@@ -345,7 +345,7 @@ export default {
       message: "{{path}} is missing an example.",
       severity: "error",
       given:
-        "$..schemas..[?(@property !== 'properties' && (@.type || @.format || @.$ref) && @.type != 'object')]",
+        "$..schemas..[?(@ && @property !== 'properties' && (@.type || @.format || @.$ref) && @.type != 'object')]",
       then: {
         field: "example",
         function: truthy,
