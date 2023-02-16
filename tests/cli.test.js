@@ -10,7 +10,11 @@ const testLint = (args) => {
 };
 
 const testLintWithLocalRuleset = (args) => {
-  return execSync(`node build/cli.js lint ${args} -j -r ${__dirname + "/../src/static/.local.spectral.yaml"}`).toString();
+  return execSync(
+    `node build/cli.js lint ${args} -j -r ${
+      __dirname + "/../src/static/.local.ruleset.js"
+    }`
+  ).toString();
 };
 
 describe("cli", () => {
@@ -52,7 +56,9 @@ describe("cli", () => {
   });
 
   it("should run lint command using a spec with errors against a local ruleset file", async () => {
-    result = JSON.parse(testLintWithLocalRuleset("./tests/fixtures/testSpec.yaml"));
+    result = JSON.parse(
+      testLintWithLocalRuleset("./tests/fixtures/testSpec.yaml")
+    );
     testObj = result[1];
     expect(typeof testObj.code).toBe("string");
     expect(typeof testObj.message).toBe("string");
