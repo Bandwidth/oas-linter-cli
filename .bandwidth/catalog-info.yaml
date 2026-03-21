@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  schemaVersion: v1.0.0
+  name: oas-linter-cli-location
+  description: Links to additional entities in the oas-linter-cli repository.
+  annotations:
+    github.com/project-slug: Bandwidth/oas-linter-cli
+spec:
+  targets:
+    - ./component.yaml
