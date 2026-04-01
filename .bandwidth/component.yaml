@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  schemaVersion: v1.0.0
+  name: oas-linter-cli
+  description: A CLI tool to lint OpenAPI specifications with Bandwidth's custom spectral ruleset
+  annotations:
+    github.com/project-slug: Bandwidth/oas-linter-cli
+    organization: BW
+    costCenter: Development - Software Infra
+spec:
+  type: Library
+  owner: github/band-swi
+  lifecycle: Available
