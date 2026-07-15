@@ -6,6 +6,7 @@ metadata:
   description: A CLI tool to lint OpenAPI specifications with Bandwidth's custom spectral ruleset
   annotations:
     github.com/project-slug: Bandwidth/oas-linter-cli
+    bandwidth.com/languages: Node.js
     organization: BW
     costCenter: Development - Software Infra
 spec:
