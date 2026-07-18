@@ -35,7 +35,7 @@
     "@stoplight/spectral-runtime": "^1.1.2",
     "axios": "^1.7.7",
     "chalk": "^4.1.2",
-    "tmp": "^0.2.2",
+    "tmp": "^0.2.3",
     "yargs": "^17.7.2"
   }
 }
